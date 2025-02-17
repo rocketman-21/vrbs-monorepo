@@ -1,0 +1,43 @@
+.tooltip {
+  @apply max-w-[200px] break-words rounded px-2.5 py-2 text-center text-white;
+}
+
+.arrow,
+.arrow::before {
+  background: inherit;
+  position: absolute;
+  width: 8px;
+  height: 8px;
+}
+
+.arrow {
+  visibility: hidden;
+}
+
+.arrow::before {
+  visibility: visible;
+  content: "";
+  transform: rotate(45deg);
+}
+
+.top {
+  bottom: -4px;
+}
+
+.bottom {
+  top: -4px;
+}
+
+.top.arrow::before,
+.bottom.arrow::before,
+.left.arrow::before {
+  left: 0;
+}
+
+.left {
+  right: -4px;
+}
+
+.right {
+  left: -8px;
+}

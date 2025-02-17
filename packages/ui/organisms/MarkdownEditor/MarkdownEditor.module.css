@@ -1,0 +1,59 @@
+.bnContainer {
+  --bn-font-family: inherit;
+}
+
+.blockContainer {
+  *[data-content-type="paragraph"],
+  *[data-content-type="bulletListItem"],
+  *[data-content-type="numberedListItem"] {
+    p {
+      @apply text-zinc-700;
+    }
+
+    a {
+      @apply underline;
+    }
+  }
+
+  *[data-content-type="heading"] {
+    h1,
+    h2,
+    h3 {
+      @apply text-zinc-900;
+    }
+
+    h1 {
+      @apply text-2xl;
+    }
+
+    h2 {
+      @apply text-xl;
+    }
+
+    h3 {
+      @apply text-lg;
+    }
+  }
+
+  *[data-content-type="image"] img {
+    @apply !w-full;
+  }
+}
+
+:global(.dark) .blockContainer {
+  *[data-content-type="heading"] {
+    h1,
+    h2,
+    h3 {
+      @apply text-white;
+    }
+  }
+
+  *[data-content-type="paragraph"],
+  *[data-content-type="bulletListItem"],
+  *[data-content-type="numberedListItem"] {
+    p {
+      @apply text-zinc-300;
+    }
+  }
+}

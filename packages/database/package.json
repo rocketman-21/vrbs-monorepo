@@ -1,0 +1,28 @@
+{
+  "name": "@cobuild/database",
+  "version": "0.0.31",
+  "scripts": {
+    "publish:npm": "node ./publishPkg.js --prepare && npm publish && node ./publishPkg.js --revert",
+    "db:generate:client": "prisma generate --schema=./prisma/database.prisma",
+    "db:generate": "pnpm db:generate:client",
+    "db:sync": "doppler setup --no-interactive && doppler run --preserve-env -- ts-node ./seed/seed.ts"
+  },
+  "dependencies": {
+    "@cobuild/libs": "workspace:*",
+    "@prisma/client": "^5.16.1",
+    "@vercel/kv": "^2.0.0",
+    "fuse.js": "^7.0.0",
+    "server-only": "^0.0.1",
+    "slugify": "1.6.6"
+  },
+  "devDependencies": {
+    "mongodb": "^6.8.0",
+    "prisma": "^5.16.1",
+    "ts-node": "^10.9.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Interface with your collective's data",
+  "license": "ISC"
+}

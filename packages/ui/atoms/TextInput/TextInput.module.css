@@ -1,0 +1,11 @@
+.lg {
+  @apply py-3.5 text-sm lg:text-base;
+}
+
+.base {
+  @apply py-2.5 text-sm leading-[18px];
+}
+
+.icon {
+  @apply pointer-events-none flex items-center text-current;
+}

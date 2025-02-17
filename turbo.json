@@ -1,0 +1,57 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalEnv": [
+    "ALCHEMY_API_KEY_BASE_SEPOLIA",
+    "ALCHEMY_API_KEY_OP_MAINNET",
+    "ALCHEMY_API_KEY_BASE",
+    "ALCHEMY_API_KEY_POLYGON",
+    "ALCHEMY_API_KEY_SEPOLIA",
+    "ALCHEMY_API_KEY",
+    "INFURA_PROJECT_ID",
+    "MUX_TOKEN_ID",
+    "MUX_TOKEN_SECRET",
+    "NEXT_PUBLIC_INFURA_PROJECT_ID",
+    "VERCEL_ENV",
+    "VERCEL",
+    "NEXT_PUBLIC_ALCHEMY_KEY"
+  ],
+  "tasks": {
+    "db:generate": {
+      "cache": false,
+      "env": ["DATABASE_REVOLUTION"]
+    },
+    "db:sync": {
+      "cache": false
+    },
+    "wagmi:generate": {
+      "cache": false
+    },
+    "lint": {
+      "outputs": []
+    },
+    "build": {
+      "dependsOn": ["^db:generate", "^build"],
+      "outputs": ["dist/**", ".next/**"],
+      "env": [
+        "NODE_ENV",
+        "VERCEL_ENV",
+        "VERCEL",
+        "VERCEL_FORCE_NO_BUILD_CACHE",
+        "NEXT_PUBLIC_VERCEL_ENV"
+      ]
+    },
+    "dev": {
+      "dependsOn": ["^db:generate"],
+      "cache": false,
+      "persistent": true
+    },
+    "dev:dotenv": {
+      "dependsOn": ["^db:generate"],
+      "cache": false,
+      "persistent": true
+    },
+    "tsc": {
+      "outputs": []
+    }
+  }
+}

@@ -1,0 +1,73 @@
+export const goals = [
+  {
+    slug: "test",
+    title: "Make Vrbs the best DAO",
+    description:
+      "Join us in our journey to make positive impact in the world. See how you can contribute to the community.",
+    colors: { background: "#059668", text: "white" },
+    image: { url: "/images/vrbs/goals/vrbs.svg", background: "#FBE7B4" },
+    darkMode: false,
+    revolutionId: "vrbstest",
+    launch: "03/31",
+    tagline: "Be based, together.",
+  },
+  {
+    slug: "lore",
+    title: "Create Vrbs Lore",
+    description: "Create stories behind each Vrb. Build our onchain lore together.",
+    colors: { background: "#059668", text: "white" },
+    image: { url: "/images/vrbs/goals/lore.png", background: "#FBE7B4" },
+    darkMode: true,
+    revolutionId: "vrbs",
+    launch: "05/01",
+    tagline: "Build lore, onchain, together",
+  },
+  {
+    slug: "fcbt",
+    title: "Show your FarCon tricks",
+    description:
+      "Join a series of skateboarding contests at FarCon. Earn crowdfunded rewards and voting power in the Vrbs movement.",
+    colors: { background: "#5D8349", text: "white" },
+    image: { url: "/images/vrbs/goals/farcon.png", background: "#488ADC" },
+    darkMode: false,
+    revolutionId: "vrbs",
+    launch: "05/01",
+    tagline: "It ain't trickin' if you got it",
+  },
+  {
+    slug: "yellow",
+    title: "Create Yellow Collective Lore",
+    description:
+      "Join a series of creative contests to help us build up the Yellow Collective. Get paid to create onchain. Earn ETH and voting power in Vrbs DAO.",
+    colors: { background: "#f4cd47", text: "#422006" },
+    image: { url: "/images/vrbs/goals/yellow.png", background: "#f4bd47" },
+    darkMode: false,
+    revolutionId: "vrbs",
+    launch: "04/19",
+    tagline: "Be based, together.",
+  },
+  {
+    slug: "base",
+    title: "Bring 1000 creators onchain",
+    description:
+      "Join a series of creative contests to help us explain Vrbs. Get paid to create, onchain, together. Earn ETH and voting power in the Vrbs movement.",
+    colors: { background: "#0051ff", text: "white" },
+    image: { url: "/images/vrbs/goals/base.svg", background: "#27272a" },
+    darkMode: true,
+    revolutionId: "vrbs",
+    launch: "03/29",
+    tagline: "Be based, together.",
+  },
+  {
+    slug: "1",
+    title: "Creadores DHnouns",
+    description:
+      "Creemos juntos un sistema de recompensas para creadores de contenido y deportistas, gane ETH y poder de votacion en la comunidad downhill en linea.",
+    colors: { background: "#92bd3c", text: "white" },
+    image: { url: "/images/dhnouns/goal.png", background: "#c8f078" },
+    launch: "04/25",
+    darkMode: false,
+    revolutionId: "dhnouns",
+    tagline: "Montar la montaña",
+  },
+] as const;

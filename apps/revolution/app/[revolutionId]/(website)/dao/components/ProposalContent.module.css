@@ -1,0 +1,41 @@
+.content {
+  @apply leading-6;
+
+  * {
+    @apply whitespace-normal;
+  }
+
+  * + h1 {
+    @apply mb-2.5 mt-5;
+  }
+
+  h2 {
+    @apply mb-2 mt-4;
+  }
+
+  h3 {
+    @apply mb-1.5 mt-3;
+  }
+
+  ul,
+  li {
+    @apply my-0.5;
+    @apply whitespace-normal;
+  }
+
+  img {
+    @apply my-2;
+  }
+
+  p {
+    @apply whitespace-normal;
+
+    & > img {
+      @apply my-0;
+    }
+  }
+
+  hr {
+    @apply my-4;
+  }
+}

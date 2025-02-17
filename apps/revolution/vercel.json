@@ -1,0 +1,44 @@
+{
+  "crons": [
+    {
+      "path": "/crons/eth-rates/set",
+      "schedule": "*/30 * * * *"
+    },
+    {
+      "path": "/crons/submissions/mux-upload",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/crons/onchain-ingestion/events",
+      "schedule": "0 */12 * * *"
+    },
+    {
+      "path": "/crons/onchain-ingestion/revolution",
+      "schedule": "*/30 * * * *"
+    },
+    {
+      "path": "/crons/onchain-ingestion/events/revolution-events",
+      "schedule": "*/30 * * * *"
+    },
+    {
+      "path": "/crons/onchain-ingestion/governance/revolution",
+      "schedule": "*/30 * * * *"
+    },
+    {
+      "path": "/crons/onchain-ingestion/governance/nouns",
+      "schedule": "0 */20 * * *"
+    },
+    {
+      "path": "/crons/builders/revenue",
+      "schedule": "0 */20 * * *"
+    },
+    {
+      "path": "/crons/farcaster",
+      "schedule": "*/20 * * * *"
+    },
+    {
+      "path": "/crons/farcaster/drops",
+      "schedule": "*/30 * * * *"
+    }
+  ]
+}

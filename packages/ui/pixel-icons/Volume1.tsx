@@ -1,0 +1,14 @@
+import { SVGProps } from "react";
+
+const SvgVolume1 = (props: SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M15 2h-2v2h-2v2H9v2H5v8h4v2h2v2h2v2h2V2Zm-4 16v-2H9v-2H7v-4h2V8h2V6h2v12h-2Zm6-8h2v4h-2v-4Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+export default SvgVolume1;

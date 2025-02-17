@@ -1,0 +1,830 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../../../node_modules/prisma-database"
+  previewFeatures = ["omitApi"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_REVOLUTION")
+}
+
+enum ScopeType {
+  community
+  subproject
+  project
+  submission
+  proposal
+  vote
+  revolution
+  story
+  contest
+  draft
+  idea
+  grant
+  culture_index
+  revolution_split
+  allo_pool
+}
+
+enum MediaType {
+  image
+  video
+  text
+  audio
+}
+
+type Scope {
+  type ScopeType
+  id   String
+}
+
+type MediaMetadata {
+  type          MediaType?
+  width         Int?
+  height        Int?
+  thumbnailIpfs String?
+}
+
+type PointsData {
+  pointsPercent      Float
+  accounts           String[]
+  percentAllocations Float[]
+}
+
+model CultureIndex {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  address         String
+  maxHeap         String
+  votingPower     String
+  transactionHash String
+  chainId         Int
+  createdAt       DateTime? @default(now()) @db.Date
+
+  @@unique([chainId, address], map: "chainId_address_1")
+  @@map("cultureIndexes")
+}
+
+model Split {
+  id                 String     @id @default(auto()) @map("_id") @db.ObjectId
+  split              String
+  pointsData         PointsData
+  accounts           String[]
+  percentAllocations Float[]
+  distributorFee     Float
+  earned             String
+  splitMain          String
+  createdAt          DateTime?  @default(now()) @db.Date
+  chainId            Int
+  controller         String
+  name               String?
+
+  @@unique([chainId, split], map: "chainId_split_1")
+  @@map("splits")
+}
+
+model Profile {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  address        String    @unique
+  username       String
+  profilePicture String?
+  bio            String?
+  website        String?
+  updatedAt      DateTime? @updatedAt @db.Date
+
+  submissions    Submission[]
+  posts          Post[]
+  drafts         Draft[]
+  ideas          Idea[]
+  proposals      Proposal[]
+  votes          Vote[]
+  PointsPurchase PointsPurchase[]
+  Auction        Auction[]
+
+  @@map("profiles")
+}
+
+type CreatorSplit {
+  address String
+  bps     Int
+}
+
+enum CultureIndexVersion {
+  v1
+}
+
+model RevenueMetrics {
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  address              String
+  splitMain            String
+  weekRevenue          Float
+  previousWeekRevenue  Float
+  weekOverWeek         Float
+  monthRevenue         Float
+  previousMonthRevenue Float
+  monthOverMonth       Float
+  totalRevenue         Float
+  updatedAt            DateTime @default(now()) @db.Date
+
+  @@unique([address, splitMain], map: "address_splitMain_1")
+  @@map("revenueMetrics")
+}
+
+model Submission {
+  id              String         @id @default(auto()) @map("_id") @db.ObjectId
+  slug            String         @unique(map: "slug_1")
+  contractAddress String
+  chainId         Int
+  name            String
+  url             String
+  thumbnailUrl    String?
+  description     String? // Short description of the submission
+  body            String? // Text value for onchain submissions
+  creators        CreatorSplit[]
+  sponsorAddress  String
+
+  pieceId              String?
+  logicContractVersion CultureIndexVersion?
+  onchainSlug          String? // Submission has this field if it was later sponsored
+
+  votesWeight   Float          @default(0)
+  mediaMetadata MediaMetadata?
+  muxStreamData Json?
+  muxStreamUrl  String?
+
+  tokenURI String? // for thatsgnarly culture index
+
+  hasBeenDropped Boolean @default(false)
+  isHidden       Boolean @default(false)
+  isOnchain      Boolean @default(false)
+
+  updatedAt DateTime @updatedAt @db.Date
+  createdAt DateTime @default(now()) @db.Date
+
+  sponsorProfile Profile? @relation(fields: [sponsorAddress], references: [address])
+
+  @@index([sponsorAddress], map: "sponsor_address_1")
+  @@index([thumbnailUrl], map: "thumbnail_url_1")
+  @@index([createdAt], map: "createdAt_1")
+  @@index([isHidden], map: "is_hidden_1")
+  @@index([contractAddress], map: "contract_address_1")
+  @@map("submissions")
+}
+
+model PointsPurchase {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  buyer                 String
+  payment               String
+  ownerAmount           String
+  protocolRewardsAmount String
+  buyerTokensEmitted    String
+  founderTokensEmitted  String
+  founderDirectPayment  String
+  grantsDirectPayment   String
+  createdAt             DateTime @default(now()) @db.Date
+  updatedAt             DateTime @updatedAt @db.Date
+  chainId               Int
+  transactionHash       String   @unique(map: "transactionHash_1")
+  address               String
+  profile               Profile? @relation(fields: [buyer], references: [address])
+
+  @@map("pointsPurchases")
+}
+
+model AuctionBid {
+  id                     String   @id @default(auto()) @map("_id") @db.ObjectId
+  bidAmount              String
+  transactionHash        String
+  bidder                 String
+  sender                 String
+  bidCreatedAt           DateTime
+  uniqueId               String   @unique(map: "uniqueId_1")
+  auctionUniqueId        String
+  chainId                Int
+  auctionContractAddress String
+
+  @@index([bidCreatedAt], map: "bidCreatedAt_1")
+  @@map("auctionBids")
+}
+
+type AuctionDetails {
+  startTime      DateTime
+  endTime        DateTime
+  sellerAddress  String?
+  fundsRecipient String?
+}
+
+enum AuctionType {
+  nouns
+  revolution_v1
+}
+
+model Auction {
+  id                        String         @id @default(auto()) @map("_id") @db.ObjectId
+  uniqueId                  String         @unique(map: "uniqueId_1")
+  chainId                   Int
+  name                      String
+  winner                    String?
+  winningBid                String?
+  auctionContractAddress    String
+  nftContractAddress        String
+  pointsPaidToCreators      String?
+  ethPaidToCreators         String?
+  nftTokenId                String
+  type                      AuctionType
+  details                   AuctionDetails
+  creatorRateBps            Int?
+  entropyRateBps            Int?
+  acceptanceManifestoSpeech String?
+  reservePrice              String?
+  minBidIncrementPercentage String?
+  timeBuffer                String?
+  settlementTransactionHash String?
+  createdAt                 DateTime?      @db.Date
+  updatedAt                 DateTime?      @db.Date
+  winnerProfile             Profile?       @relation(fields: [winner], references: [address])
+
+  @@index([details.startTime], map: "details_startTime_1")
+  @@index([details.endTime], map: "details_endTime_1")
+  @@index([chainId], map: "chainId_1")
+  @@index([nftTokenId], map: "nftTokenId_1")
+  @@index([auctionContractAddress], map: "auctionContractAddress_1")
+  @@map("auctions")
+}
+
+type EvmContract {
+  address String
+  chainId Int
+}
+
+model Revolution {
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  revolutionId       String    @unique
+  name               String?
+  tokenContract      String?
+  chainId            Int
+  governanceEntityId String?
+  createdAt          DateTime? @default(now()) @db.Date
+  scope              Scope?
+
+  @@map("revolutions")
+}
+
+model Upvote {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  voter          String
+  weight         Float
+  strategy       String
+  chainId        Int       @default(1)
+  version        Float
+  snapshot       Int
+  slug           String?
+  networkAddress String?
+  uniqueId       String    @unique
+  createdAt      DateTime? @default(now()) @db.Date
+  updatedAt      DateTime? @default(now()) @db.Date
+  stale          Boolean?
+
+  @@index([voter], map: "voter_1")
+  @@map("upvotes")
+}
+
+model Media {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  address       String // Creator address
+  url           String    @unique
+  revolutionId  String
+  type          MediaType
+  muxUploadId   String?
+  muxStreamUrl  String?
+  muxStreamData Json?
+  thumbnailUrl  String?
+  width         Int?
+  height        Int?
+  tag           String?
+  updatedAt     DateTime  @updatedAt @db.Date
+  createdAt     DateTime  @default(now()) @db.Date
+
+  @@index([revolutionId], map: "revolution_id_1")
+  @@index([address], map: "address_1")
+  @@index([tag], map: "tag_1")
+  @@map("media")
+}
+
+model Story {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  slug          String        @unique(map: "slug_1")
+  revolutionId  String
+  title         String
+  imageUrl      String?
+  thumbnailUrl  String
+  team          String[]
+  description   String?
+  updatedAt     DateTime      @default(now()) @db.Date
+  createdAt     DateTime      @default(now()) @db.Date
+  isPublished   Boolean       @default(false)
+  isFile        Boolean?      @default(false)
+  externalUrl   String?
+  casts         String[]
+  alloProfileId String?
+  contributors  Contributor[]
+
+  subtitle String? // Deprecated
+  location String? // Deprecated
+  body     String // Deprecated for old story editor (ThatsGnarly)
+
+  @@index([revolutionId], map: "revolution_id_1")
+  @@index([isPublished], map: "is_published_1")
+  @@index([alloProfileId], map: "alloProfileId_1")
+  @@index([updatedAt(sort: Desc)], map: "updatedAt_desc")
+  @@map("stories")
+}
+
+type Contributor {
+  address String
+  comment String
+}
+
+model AlloProfile {
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  alloProfileId        String
+  title                String
+  parentGrantsContract String
+  tagline              String?
+  body                 String
+  imageUrl             String
+  contractAddress      String?
+  team                 String[]
+  tags                 String[]
+  chainId              Int
+  revolutionId         String
+  createdAt            DateTime @default(now()) @db.Date
+  updatedAt            DateTime @updatedAt @db.Date
+  casts                String[]
+  isApplicable         Boolean?
+  isApplication        Boolean?
+  maxOpenings          Int?
+  openings             Int?
+
+  // unique index for chainId + alloProfileId
+  @@unique([chainId, alloProfileId], map: "chainId_alloProfileId_1")
+  @@index([revolutionId], map: "revolution_id_1")
+  @@index([contractAddress], map: "contract_address_1")
+  @@map("alloProfiles")
+}
+
+model AlloPool {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  alloPoolId   String
+  title        String
+  body         String
+  imageUrl     String
+  strategy     String
+  managers     String[]
+  tags         String[]
+  chainId      Int
+  revolutionId String
+  createdAt    DateTime @default(now()) @db.Date
+  updatedAt    DateTime @updatedAt @db.Date
+
+  // unique index for chainId + alloPoolId
+  @@unique([chainId, alloPoolId], map: "chainId_alloPoolId_1")
+  @@index([revolutionId], map: "revolution_id_1")
+  @@map("alloPools")
+}
+
+model Post {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  address       String
+  markdown      String?
+  upvotes       String[]
+  upvoteCount   Int       @default(0)
+  downvotes     String[]
+  parentPostId  String?
+  parentPost    Post?     @relation("Comment", fields: [parentPostId], references: [postId], onDelete: NoAction, onUpdate: NoAction)
+  children      Post[]    @relation("Comment")
+  childrenCount Int       @default(0)
+  rootPostId    String?
+  postId        String    @unique @default(uuid())
+  scope         Scope
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @default(now())
+  profile       Profile?  @relation(fields: [address], references: [address])
+
+  @@map("posts")
+}
+
+model Draft {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  address         String
+  draftId         String        @unique(map: "draft_id_1")
+  title           String
+  body            String
+  createdAt       DateTime      @default(now()) @db.Date
+  updatedAt       DateTime      @default(now()) @updatedAt @db.Date
+  profile         Profile?      @relation(fields: [address], references: [address])
+  choices         String[]      @default(["For", "Against", "Abstain"])
+  team            String[]
+  isOnChain       Boolean       @default(false)
+  transactionHash String?
+  proposalId      String?
+  revolutionId    String
+  transactions    Transaction[]
+  isPrivate       Boolean       @default(true)
+
+  @@index([address], map: "address_1")
+  @@index([revolutionId], map: "revolution_id_1")
+  @@index([createdAt], map: "created_at_1")
+  @@map("drafts")
+}
+
+type Transaction {
+  type            TransactionType
+  from            String
+  target          String
+  amount          Float
+  chainId         Int
+  symbol          String
+  contractAddress String?
+}
+
+enum TransactionType {
+  SendAmount
+}
+
+model Idea {
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  ideaId        String     @unique(map: "idea_id_1")
+  creator       String
+  body          String
+  revolutionId  String
+  profile       Profile?   @relation(fields: [creator], references: [address])
+  commentsCount Int        @default(0)
+  votes         IdeaVote[]
+  voteResult    Int        @default(0)
+  createdAt     DateTime   @default(now()) @db.Date
+  updatedAt     DateTime   @default(now()) @updatedAt @db.Date
+  imageUrl      String?
+
+  @@index([creator], map: "creator_1")
+  @@index([revolutionId], map: "revolution_id_1")
+  @@index([createdAt], map: "created_at_1")
+  @@map("ideas")
+}
+
+type IdeaVote {
+  address String
+  value   Int
+}
+
+type ProposalsCreation {
+  block           Int?
+  date            DateTime @db.Date
+  transactionHash String?
+}
+
+type ProposalsCustomFields {
+  links ProposalsCustomFieldsLinks[]
+}
+
+type ProposalsCustomFieldsLinks {
+  name String
+  url  String
+}
+
+type ProposalsLastUpdated {
+  blockNumber      Int
+  logIndex         Int
+  transactionIndex Int
+}
+
+type ProposalsMetadata {
+  endBlock   Int?
+  endDate    DateTime? @db.Date
+  startBlock Int?
+  startDate  DateTime? @db.Date
+}
+
+type ProposalsPayoutAmount {
+  /// Multiple data types found: Float: 13.4%, Int: 86.6% out of 947 sampled entries
+  eth      Json
+  quantity String
+}
+
+enum ProposalStatus {
+  active
+  cancelled
+  closed
+  defeated
+  executed
+  expired
+  pending
+  queued
+  succeeded
+  vetoed
+  updateable
+  objectionperiod
+}
+
+type ProposalsStrategy {
+  proposalThreshold String?
+  snapshotBlock     Int
+}
+
+type VotesLastUpdated {
+  blockNumber      Int
+  logIndex         Int
+  transactionIndex Int
+}
+
+type VotesVotedAt {
+  block Int?
+  time  DateTime @db.Date
+}
+
+model Proposal {
+  id                 String                 @id @default(auto()) @map("_id") @db.ObjectId
+  v                  Int?                   @map("__v")
+  auctionId          String?
+  chainId            Int
+  blockchain         String
+  calldatas          String[]
+  creation           ProposalsCreation
+  customFields       ProposalsCustomFields?
+  description        String
+  entityId           String
+  lastUpdated        ProposalsLastUpdated?
+  metadata           ProposalsMetadata
+  network            String
+  options            Json
+  trackerType        TrackerType
+  payoutAmount       ProposalsPayoutAmount?
+  proposalId         String
+  proposer           String
+  signatures         String[]
+  status             ProposalStatus
+  strategy           ProposalsStrategy?
+  targets            String[]
+  title              String?
+  tokenContract      String?
+  governanceContract String
+  totalUniqueVotes   Int
+  totalVotes         String
+  type               GovernanceType
+  uniqueId           String                 @unique(map: "uniqueId_1")
+  updatedAt          DateTime?              @db.Date
+  values             String[]
+  profile            Profile?               @relation(fields: [proposer], references: [address])
+  votes              Vote[]
+
+  @@unique([proposalId, entityId])
+  @@index([entityId, proposalId], map: "entityId_1_proposalId_1")
+  @@index([entityId], map: "entityId_1")
+  @@index([payoutAmount.eth(sort: Desc)], map: "payoutAmount.eth_-1")
+  @@map("proposals")
+}
+
+enum GovernanceType {
+  nouns
+  nounsbuilder
+  revolution
+}
+
+model Vote {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  v                 Int?              @map("__v")
+  blockchain        String
+  countedInProposal Boolean?
+  name              String?
+  chainId           Int?
+  entityId          String
+  lastUpdated       VotesLastUpdated?
+  network           String
+  optionId          Int
+  proposalId        String
+  reason            String
+  tokenContract     String?
+  type              GovernanceType
+  uniqueId          String            @unique(map: "uniqueId_1")
+  updatedAt         DateTime?         @db.Date
+  votedAt           VotesVotedAt
+  voter             String
+  weight            String
+  profile           Profile?          @relation(fields: [voter], references: [address])
+  proposal          Proposal?         @relation(fields: [proposalId, entityId], references: [proposalId, entityId])
+
+  @@index([voter], map: "voter_1")
+  @@index([voter, entityId], map: "voter_1_entityId_1")
+  @@index([entityId], map: "entityId_1")
+  @@index([weight, proposalId], map: "weight_1_proposalId_1")
+  @@index([entityId, proposalId, weight], map: "entityId_1_proposalId_1_weight_1")
+  @@index([votedAt.time(sort: Desc)], map: "votedAt.time_-1")
+  @@map("votes")
+}
+
+model OnchainEvent {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  address          String
+  transactionHash  String
+  topics           String[]
+  data             String?
+  blockNumber      Int
+  createdAt        DateTime? @db.Date
+  updatedAt        DateTime? @db.Date
+  chainId          Int
+  logIndex         Int?
+  transactionIndex Int?
+  decoded          Json?
+  ingestedOnDemand Boolean?
+  blockHash        String?
+  removed          Boolean?
+
+  @@map("events")
+}
+
+model EventTracker {
+  id                     String    @id @default(auto()) @map("_id") @db.ObjectId
+  chainId                Int
+  topic0                 String?   @unique(map: "topic0_1")
+  lastScannedBlock       Int
+  startBlock             Int?
+  name                   String
+  disabled               Boolean
+  numTopics              Int
+  blockJump              Int
+  implementationContract String?
+  contract               String?
+  totalUpserted          Int?
+  maxBlock               Int?
+  ingestionDelay         Int?
+  createdAt              DateTime? @default(now()) @db.Date
+  updatedAt              DateTime? @updatedAt @db.Date
+
+  @@map("eventTrackers")
+}
+
+enum TrackerType {
+  nouns_auction
+  gnars_auction
+  revolution_auction
+  revolution_dao_v1
+  nouns_dao_v1
+  nouns_dao_v2
+  nouns_dao_v3
+  nounsbuilder_v1
+  culture_index
+  points_emitter
+  revolution_split
+  revolution_builder
+  contest_builder
+}
+
+type TrackedContract {
+  name    String
+  address String
+}
+
+type ContractTopic0 {
+  contractName           String
+  implementationContract String
+  topic0                 String
+  contract               String
+  eventName              String
+}
+
+model EntityTracker {
+  id                 String            @id @default(auto()) @map("_id") @db.ObjectId
+  chainId            Int
+  lastScannedBlock   Int
+  name               String
+  blockJump          Int
+  lastPickedUpWorkOn DateTime
+  startBlock         Int
+  contractTopic0s    ContractTopic0[]
+  contract           String
+  contracts          TrackedContract[]
+  disabled           Boolean
+  trackerType        TrackerType
+  //custom top level fields for the entity like auction reserve price setting
+  details            Json?
+  author             String?
+  createdAt          DateTime?         @default(now()) @db.Date
+  updatedAt          DateTime?         @updatedAt @db.Date
+
+  //unique index on contract and trackerType
+  @@unique([contract, trackerType], map: "contract_trackerType")
+  @@map("entityTrackers")
+}
+
+model Contest {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  chainId             Int
+  address             String @unique
+  cultureIndexAddress String @unique
+  revolutionId        String
+
+  goal     String?
+  imageUrl String?
+
+  createdAt DateTime? @default(now()) @db.Date
+  updatedAt DateTime? @default(now()) @updatedAt @db.Date
+
+  @@unique([chainId, address], map: "chainId_address_1")
+  @@index([revolutionId], map: "revolution_id_1")
+  @@index([createdAt], map: "created_at_1")
+  @@index([goal], map: "goal_1")
+  @@map("contests")
+}
+
+model Cast {
+  id                 String            @id @default(auto()) @map("_id") @db.ObjectId
+  hash               String            @unique
+  parent_hash        String?
+  parent_url         String?
+  root_parent_url    String?
+  parent_author      Json
+  author             FarcasterUser
+  text               String
+  timestamp          DateTime
+  embeds             Json[]
+  type               String?
+  frames             Json[]
+  reactions          Json
+  replies            Json
+  thread_hash        String?
+  mentioned_profiles Json[]
+  channel            FarcasterChannel?
+  revolutionId       String
+
+  createdAt DateTime? @default(now()) @db.Date
+  updatedAt DateTime? @updatedAt @db.Date
+
+  @@index([timestamp], map: "timestamp_1")
+  @@map("casts")
+}
+
+type FarcasterChannel {
+  id        String
+  name      String
+  image_url String
+}
+
+type FarcasterUser {
+  fid                Int
+  username           String
+  display_name       String?
+  custody_address    String
+  pfp_url            String?
+  profile            Json
+  follower_count     Int
+  following_count    Int
+  verifications      String[]
+  verified_addresses Json
+  active_status      String
+  power_badge        Boolean
+  viewer_context     Json?
+}
+
+model Drop {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  url          String @unique
+  chainId      Int
+  contract     String
+  tokenId      String
+  revolutionId String
+
+  saleConfig             DropSaleConfig?
+  metadata               DropMetadata?
+  creatorRewardRecipient String // the address that will receive the funds
+  collectionOwner        String
+  totalMinted            String
+  splitToDAOBps          Int
+  hidden                 Boolean?
+
+  createdAt DateTime @default(now()) @db.Date
+  updatedAt DateTime @updatedAt @db.Date
+
+  @@index([tokenId], map: "tokenId_1")
+  @@index([revolutionId], map: "revolutionId_1")
+  @@map("drops")
+}
+
+type DropSaleConfig {
+  saleStart           String
+  saleEnd             String
+  // zora v1
+  maxTokensPerAddress String?
+  pricePerToken       String?
+  fundsRecipient      String?
+  // zora v2
+  poolAddress         String?
+  erc20zAddress       String?
+}
+
+type DropMetadata {
+  name          String
+  description   String
+  image         String
+  animation_url String
+}

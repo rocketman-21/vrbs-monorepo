@@ -1,0 +1,3 @@
+setup:
+  project: revolution
+  config: local

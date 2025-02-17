@@ -1,0 +1,17 @@
+{
+  "name": "onchain-ingestion",
+  "version": "0.0.1",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "tsc": "tsc",
+    "wagmi:generate": "pnpm env:config wagmi generate",
+    "env:config": "doppler setup --no-interactive && doppler run --preserve-env"
+  },
+  "dependencies": {
+    "@cobuild/database": "workspace:*",
+    "@cobuild/libs": "workspace:*",
+    "@wagmi/cli": "^2.1.8"
+  }
+}

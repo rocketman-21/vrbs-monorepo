@@ -1,0 +1,19 @@
+.container {
+  @apply inline-flex flex-shrink-0 items-center rounded-xl py-1 px-1.5 text-xs font-semibold;
+}
+
+.default {
+  background: linear-gradient(
+    79.76deg,
+    rgba(254, 107, 139, 0.08) 0%,
+    rgba(255, 142, 83, 0.08) 97.04%
+  );
+}
+
+.icon {
+  @apply mr-1;
+}
+
+.default .icon path {
+  fill: url(#MRGradient);
+}

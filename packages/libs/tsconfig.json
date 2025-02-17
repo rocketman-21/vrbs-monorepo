@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig/react-library.json",
+  "include": [
+    ".",
+    "../../apps/revolution/app/[revolutionId]/(website)/auction/components/content/custom-faqs/revolution-faq.tsx"
+  ],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "outDir": "./dist",
+    "declaration": true,
+    "paths": {
+      "@cobuild/libs/onchain": ["./onchain"]
+    }
+  }
+}

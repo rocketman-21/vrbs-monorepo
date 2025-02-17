@@ -1,0 +1,21 @@
+{
+  "name": "@cobuild/libs",
+  "version": "0.0.33",
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "publish:npm": "pnpm run clean && tsc && npm publish && node ./publishPkg.js --revert",
+    "wagmi:generate": "pnpm env:config wagmi generate",
+    "env:config": "doppler setup --no-interactive && doppler run --preserve-env"
+  },
+  "dependencies": {
+    "@wagmi/cli": "^2.1.15",
+    "axios": "^1.7.2",
+    "form-data": "^4.0.0",
+    "jose": "^5.6.3",
+    "svgo": "3.3.2",
+    "use-debounce": "^10.0.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

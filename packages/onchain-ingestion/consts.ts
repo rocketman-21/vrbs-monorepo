@@ -1,0 +1,1 @@
+export const INFURA_INGESTION_KEY = "11dc1ba945cc46f38c18d21129a34be6";

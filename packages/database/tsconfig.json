@@ -1,0 +1,13 @@
+{
+  "include": ["."],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "incremental": true,
+    "noEmit": true,
+    "strict": true,
+    "lib": ["ESNext"],
+    "target": "es6"
+  }
+}

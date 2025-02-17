@@ -1,0 +1,8 @@
+.arrow {
+  @apply absolute top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-lg bg-white text-black duration-150 hover:opacity-80 md:flex;
+  box-shadow: 0px 25px 50px rgba(2, 2, 4, 0.25);
+}
+
+:global(.dark) .arrow {
+  @apply bg-zinc-800/90 text-white;
+}
