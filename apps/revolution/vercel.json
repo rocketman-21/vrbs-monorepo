@@ -2,23 +2,23 @@
   "crons": [
     {
       "path": "/crons/eth-rates/set",
-      "schedule": "*/30 * * * *"
+      "schedule": "0 */2 * * *"
     },
     {
       "path": "/crons/onchain-ingestion/events",
-      "schedule": "0 */12 * * *"
+      "schedule": "0 */48 * * *"
     },
     {
       "path": "/crons/onchain-ingestion/revolution",
-      "schedule": "*/30 * * * *"
+      "schedule": "0 */2 * * *"
     },
     {
       "path": "/crons/onchain-ingestion/events/revolution-events",
-      "schedule": "*/30 * * * *"
+      "schedule": "0 */2 * * *"
     },
     {
       "path": "/crons/onchain-ingestion/governance/revolution",
-      "schedule": "*/30 * * * *"
+      "schedule": "0 */2 * * *"
     }
   ]
 }
